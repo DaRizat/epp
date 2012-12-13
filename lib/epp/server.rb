@@ -131,7 +131,7 @@ module Epp #:nodoc:
 
       puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
 
-      return server_response
+      return handle_response(server_response)
     end
 
     # Send an XML frame to the server. Should return the total byte
