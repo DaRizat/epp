@@ -3,6 +3,8 @@ module Epp #:nodoc:
     include LibXML::XML
     include RequiresParameters
         
+    require 'pp'
+
     attr_accessor :tag, :password, :server, :port, :lang, :services, :extensions, :version
     
     # ==== Required Attrbiutes
@@ -32,6 +34,7 @@ module Epp #:nodoc:
 
       @sslcert    = attributes[:sslcert]
       @sslkey     = attributes[:sslkey]
+      @ca_file    = attributes[:ca_file]
       if @sslcert then requires!(attributes, :sslkey) end
       if @sslkey then requires!(attributes, :sslcert) end
       
@@ -59,6 +62,7 @@ module Epp #:nodoc:
       @logged_in = true if login
       
       begin
+        puts "******** LOGGED IN, SENDING REQUEST \n #{pp(xml)} \n *******"
         @response = send_request(xml)
       ensure
         @logged_in = false if @logged_in && logout
@@ -84,6 +88,7 @@ module Epp #:nodoc:
       @connection = TCPSocket.new(server, port)
       if @sslcert and @sslkey then
           sslcontext = OpenSSL::SSL::SSLContext.new
+          sslcontext.ca_file = @ca_file if @ca_file
           sslcontext.cert = OpenSSL::X509::Certificate.new( File.open( @sslcert ) );
           sslcontext.key = OpenSSL::PKey::RSA.new( File.open( @sslkey ) );
           @socket = OpenSSL::SSL::SSLSocket.new(@connection,sslcontext) if @connection
@@ -122,7 +127,11 @@ module Epp #:nodoc:
     
       raise SocketError.new("Got bad frame header length of #{length} bytes from the server") if length < 5
     
-      return @socket.read(length - 4)
+      server_response =  @socket.read(length - 4)
+
+      puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
+
+      return server_response
     end
 
     # Send an XML frame to the server. Should return the total byte
