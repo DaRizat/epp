@@ -62,15 +62,14 @@ module Epp #:nodoc:
       @logged_in = true if login
       
       begin
-        puts "******** LOGGED IN, SENDING REQUEST \n #{pp(xml)} \n *******"
-        @response = send_request(xml)
+        @response = Hpricot::XML(send_request(xml))
       ensure
         @logged_in = false if @logged_in && logout
                 
         close_connection
       end
       
-      return @response
+      return handle_response(@response)
     end
         
     # Wrapper which sends an XML frame to the server, and receives 
@@ -129,9 +128,9 @@ module Epp #:nodoc:
     
       server_response =  @socket.read(length - 4)
 
-      puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
+      # puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
 
-      return handle_response(server_response)
+      return server_response
     end
 
     # Send an XML frame to the server. Should return the total byte
