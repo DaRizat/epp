@@ -69,7 +69,7 @@ module Epp #:nodoc:
         close_connection
       end
       
-      return handle_response(@response)
+      return handle_response(@response).to_s
     end
         
     # Wrapper which sends an XML frame to the server, and receives 
@@ -128,7 +128,7 @@ module Epp #:nodoc:
     
       server_response =  @socket.read(length - 4)
 
-      # puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
+      #puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
 
       return server_response
     end
@@ -208,7 +208,7 @@ module Epp #:nodoc:
       result_code = (response/"epp"/"response"/"result").attr("code").to_i
       
       if result_code == acceptable_response
-        return true
+        return response
       else
         result_message  = (response/"epp"/"response"/"result"/"msg").text.strip
         
