@@ -128,7 +128,7 @@ module Epp #:nodoc:
     
       server_response =  @socket.read(length - 4)
 
-      #puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
+      puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
 
       return server_response
     end
