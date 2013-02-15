@@ -1,5 +1,6 @@
-module Epp #:nodoc:
-  class Server
+module EppRecord #:nodoc:
+  class Transaction
+
     include LibXML::XML
     include RequiresParameters
         
@@ -20,7 +21,8 @@ module Epp #:nodoc:
     # * <tt>:services</tt> - Use custom EPP services in the <login> frame. The defaults use the EPP standard domain, contact and host 1.0 services.
     # * <tt>:extensions</tt> - URLs to custom extensions to standard EPP. Use these to extend the standard EPP (e.g., Nominet uses extensions). Defaults to none.
     # * <tt>:version</tt> - Set the EPP version. Defaults to "1.0".
-    def initialize(attributes = {})
+    def initialize(registry)
+      attributes = EppRecord::Authentication.get_attributes_for registry
       requires!(attributes, :tag, :password, :server)
       
       @tag        = attributes[:tag]
