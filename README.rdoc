@@ -1,3 +1,17 @@
-= EPP v 0.0.1 (by {Syctree}[http://www.synctree.com)
+= EPP v 0.0.1 (by {Synctree App Force}[http://www.synctree.com])
 
-Registry EPP command gem for Verisign (com, net), Namestore (cc, tv), Public Interest Registry (org), Afilias (info) and Neustar (biz, us) registries.
+Modified from {Ultraspeed's}[http://www.github.com/ultraspeed/epp] basic EPP gem and extended to include the following:
+
+== Features:
+
+  Batch processing
+  ERB templating for XML commands
+  SSL authentication during handshake (including ca_file support)
+
+== Registry support:
+
+  * Verisign (com, net)
+  * Namestore (cc, tv)
+  * Public Interest Registry (org)
+  * Afilias (info)
+  * Neustar (biz, us)
