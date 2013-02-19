@@ -1,0 +1,9 @@
+<domain:update xmlns:domain='urn:ietf:params:xml:ns:domain-1.0'>
+  <domain:name><%= @object.full_name %><domain:update>
+  <domain:add>
+    <domain:status s='clientHold'/>
+    <domain:status s='clientDeleteProhibited'/>
+    <domain:status s='clientTransferProhibited'/>
+    <domain:status s='clientUpdateProhibited'/>
+  </domain:add>
+<domain:update>

@@ -1,0 +1,12 @@
+
+      xml = epp_header
+      xml.root << command_node = Node.new("command")
+      command_node << info_node = Node.new("info")
+      info_node << domain_info_node = Node.new("domain:info")
+      domain_info_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
+      domain_info_node << domain_name_node = Node.new("domain:name", full_name)
+      domain_info_node['hosts'] = "all"
+      domain_info_node << domain_auth_node = Node.new("domain:authInfo")
+      domain_auth_node << Node.new("domain:pw", domain_password)
+      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
+      xml.to_s

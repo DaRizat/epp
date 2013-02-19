@@ -1,9 +1,9 @@
-module EppRecord #:nodoc:
+module Epp #:nodoc:
   class Transaction
 
     include LibXML::XML
     include RequiresParameters
-        
+   
     require 'pp'
 
     attr_accessor :tag, :password, :server, :port, :lang, :services, :extensions, :version
@@ -22,7 +22,7 @@ module EppRecord #:nodoc:
     # * <tt>:extensions</tt> - URLs to custom extensions to standard EPP. Use these to extend the standard EPP (e.g., Nominet uses extensions). Defaults to none.
     # * <tt>:version</tt> - Set the EPP version. Defaults to "1.0".
     def initialize(registry)
-      attributes = EppRecord::Authentication.get_attributes_for registry
+      attributes = Epp::Authentication.get_attributes_for registry
       requires!(attributes, :tag, :password, :server)
       
       @tag        = attributes[:tag]
@@ -43,17 +43,6 @@ module EppRecord #:nodoc:
       @logged_in  = false
     end
     
-    def new_epp_request
-      xml = Document.new
-      xml.root = Node.new("epp")
-      
-      xml.root["xmlns"] = "urn:ietf:params:xml:ns:epp-1.0"
-      xml.root["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-      xml.root["xsi:schemaLocation"] = "urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"
-      
-      return xml
-    end
-    
     # Sends an XML request to the EPP server, and receives an XML response. 
     # <tt><login></tt> and <tt><logout></tt> requests are also wrapped
     # around the request, so we can close the socket immediately after
@@ -67,7 +56,6 @@ module EppRecord #:nodoc:
         @response = Hpricot::XML(send_request(xml))
       ensure
         @logged_in = false if @logged_in && logout
-                
         close_connection
       end
       
@@ -107,9 +95,7 @@ module EppRecord #:nodoc:
     def close_connection
       @socket.close     if @socket and not @socket.closed?
       @connection.close if @connection and not @connection.closed?
-      
       @socket = @connection = nil
-
       return true
     end
     
@@ -119,19 +105,12 @@ module EppRecord #:nodoc:
     # it will return a string containing the XML from the server.
     def get_frame
       raise SocketError.new("Connection closed by remote server") if !@socket or @socket.eof?
-
       header = @socket.read(4)
-    
       raise SocketError.new("Error reading frame from remote server") if header.nil?
-    
       length = header_size(header)
-    
       raise SocketError.new("Got bad frame header length of #{length} bytes from the server") if length < 5
-    
       server_response =  @socket.read(length - 4)
-
       puts " ******* GET FRAME RETURNS \n #{pp(server_response)} \n ******** "
-
       return server_response
     end
 
@@ -139,6 +118,7 @@ module EppRecord #:nodoc:
     # size of the frame sent to the server. If the socket returns EOF,
     # the connection has closed and a SocketError is raised.
     def send_frame(xml)
+      puts " ******* SEND FRAME \n #{pp(xml)} \n ******* "
       @socket.write(packed(xml) + xml)
     end
     
@@ -153,58 +133,64 @@ module EppRecord #:nodoc:
     end
     
     private 
-    
-    # Sends a standard login request to the EPP server.
+
+    def new_epp_request
+      xml = Document.new
+      xml.root = Node.new("epp")
+      xml.root["xmlns"] = "urn:ietf:params:xml:ns:epp-1.0"
+      xml.root["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
+      xml.root["xsi:schemaLocation"] = "urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"
+      return xml
+    end
+
     def login
       raise SocketError, "Socket must be opened before logging in" if !@socket or @socket.closed?
-      
       xml = new_epp_request
-      
       xml.root << command = Node.new("command")
       command << login = Node.new("login")
-      
       login << Node.new("clID", tag)
       login << Node.new("pw", password)
-      
       login << options = Node.new("options")
-      
       options << Node.new("version", version)
       options << Node.new("lang", lang)
-      
       login << services = Node.new("svcs")
-      
       services << Node.new("objURI", "urn:ietf:params:xml:ns:domain-1.0")
       services << Node.new("objURI", "urn:ietf:params:xml:ns:contact-1.0")
       services << Node.new("objURI", "urn:ietf:params:xml:ns:host-1.0")
-      
       services << extensions_container = Node.new("svcExtension") unless extensions.empty?
-      
       for uri in extensions
         extensions_container << Node.new("extURI", uri)
       end
-      
       command << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-
       response = Hpricot::XML(send_request(xml.to_s))
-
       handle_response(response)
     end
-    
-    # Sends a standard logout request to the EPP server.
+
     def logout
       raise SocketError, "Socket must be opened before logging out" if !@socket or @socket.closed?
-      
       xml = new_epp_request
-      
       xml.root << command = Node.new("command")
-      
       command << login = Node.new("logout")
       command << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      
       response = Hpricot::XML(send_request(xml.to_s))
-      
       handle_response(response, 1500)
     end
+
+    # Sends a standard login request to the EPP server.
+    #def login
+    #  raise SocketError, "Socket must be opened before logging in" if !@socket or @socket.closed?
+    #  command = epp_login(tag, password, version, lang, extensions)
+    #  response = Hpricot::XML(send_request(command))
+    #  handle_response(response)
+    #end
+    
+    # Sends a standard logout request to the EPP server.
+    #def logout
+    #  raise SocketError, "Socket must be opened before logging out" if !@socket or @socket.closed?
+    #  command = epp_logout
+    #  response = Hpricot::XML(send_request(command))
+    #  handle_response(response, 1500)
+    #end
     
     def handle_response(response, acceptable_response = 1000)
       result_code = (response/"epp"/"response"/"result").attr("code").to_i

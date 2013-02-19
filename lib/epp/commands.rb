@@ -1,134 +1,75 @@
 require 'erb'
 
 module Epp
-  class Command
-    include LibXML::XML
+  module Commands
 
-    def activate
-
-      template = read_template("activate")
-
-      str = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << update_node = Node.new("update")
-      update_node << domain_update_node = Node.new("domain:update")
-      domain_update_node << domain_add_node = Node.new("domain:add")
-      domain_update_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_update_node << Node.new("domain:name", full_name)
-      domain_add_node << ok_status_node = Node.new("domain:status")
-      ok_status_node["s"] = "ok"
-      domain_update_node << domain_rem_node = Node.new("domain:rem")
-      domain_rem_node << ok_status_node = Node.new("domain:status")
-      ok_status_node["s"] = "inactive"
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def activate_at_registry
+      @epp_objects = [self]
+      render_template("activate")
     end
 
-    def transfer       
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      #TODO: The transfer has to include ns info, need to consult with Afilias for this.
+    def create_domain_at_registry domain, contact_id
+      @domain = domain
+      @contact_id = contact_id
+      render_template("create_domain")
     end
 
-    def expire
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << update_node = Node.new("update")
-      update_node << domain_update_node = Node.new("domain:update")
-      domain_update_node << domain_add_node = Node.new("domain:add")
-      domain_update_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_update_node << Node.new("domain:name", full_name)
-      domain_add_node << del_status_node = Node.new("domain:status")
-      del_status_node["s"] = "clientDeleteProhibited"
-      domain_add_node << hold_status_node = Node.new("domain:status")
-      hold_status_node["s"] = "clientHold"
-      domain_add_node << trans_status_node = Node.new("domain:status")
-      trans_status_node["s"] = "clientTransferProhibited"
-      domain_add_node << update_status_node = Node.new("domain:status")
-      update_status_node["s"] = "clientUpdateProhibited"
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def create_at_registry
+      @epp_objects = [self]
+      render_template("create")
     end
 
-    def update_before_deletion
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << update_node = Node.new("update")
-      update_node << domain_update_node = Node.new("domain:update")
-      domain_update_node << domain_rem_node = Node.new("domain:rem")
-      domain_update_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_update_node << Node.new("domain:name", full_name)
-      domain_rem_node << del_status_node = Node.new("domain:status")
-      del_status_node["s"] = "clientDeleteProhibited"
-      domain_rem_node << hold_status_node = Node.new("domain:status")
-      hold_status_node["s"] = "clientHold"
-      domain_rem_node << trans_status_node = Node.new("domain:status")
-      trans_status_node["s"] = "clientTransferProhibited"
-      domain_rem_node << update_status_node = Node.new("domain:status")
-      update_status_node["s"] = "clientUpdateProhibited"
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def delete_at_registry
+      @epp_objects = [self]
+      render_template("delete")
     end
 
-    def create
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << create_node = Node.new("create")
-      create_node << domain_create_node = Node.new("domain:create")
-      domain_create_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_create_node << Node.new("domain:name", full_name)
-      domain_create_node << domain_auth_node = Node.new("domain:authInfo")
-      domain_auth_node << Node.new("domain:pw", domain_password)
-      domain_create_node << Node.new("domain:registrant", registrant)
-      domain_create_node << admin_node = Node.new("domain:contact", registrant)
-      admin_node["type"] = "admin"
-      domain_create_node << tech_node = Node.new("domain:contact", registrant)
-      tech_node["type"] = "tech"
-      domain_create_node << billing_node = Node.new("domain:contact", registrant)
-      billing_node["type"] = "billing"
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def expire_at_registry
+      @epp_objects = [self]
+      render_template("expire")
     end
 
-    def delete
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << delete_node = Node.new("delete")
-      delete_node << domain_delete_node = Node.new("domain:delete")
-      domain_delete_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_delete_node << domain_name_node = Node.new("domain:name", full_name)
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def lock_at_registry
+      @epp_objects = [self]
+      render_template("lock")
     end
 
-    def info
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << info_node = Node.new("info")
-      info_node << domain_info_node = Node.new("domain:info")
-      domain_info_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_info_node << domain_name_node = Node.new("domain:name", full_name)
-      domain_info_node['hosts'] = "all"
-      domain_info_node << domain_auth_node = Node.new("domain:authInfo")
-      domain_auth_node << Node.new("domain:pw", domain_password)
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def epp_login username, password, version, lang, extensions
+      @username = username
+      @password = password
+      @version = version
+      @lang = lang
+      @extensions = extensions
+      render_template("login")
     end
 
-    def renew
-      exp_date = Time.at(expiration_date).strftime("%Y-%m-%d")    
-      puts "EXPIRATION DATE #{exp_date}"
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << renew_node = Node.new("renew")
-      renew_node << domain_renew_node = Node.new("domain:renew")
-      domain_renew_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_renew_node << domain_name_node = Node.new("domain:name", full_name)
-      domain_renew_node << domain_exp_node = Node.new("domain:curExpDate", exp_date)
-      domain_renew_node << domain_period_node = Node.new("domain:period", 1)
-      domain_period_node['unit'] = "y"
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s
+    def epp_logout
+      render_template("logout")
+    end
+
+    def prepare_to_delete_at_registry
+      @epp_objects = [self]
+      render_template("prepare_to_delete")
+    end
+
+    def registry_info
+      @epp_objects = [self]
+      render_template("info")
+    end
+
+    def renew_at_registry
+      @epp_objects = [self]
+      render_template("renew")
+    end
+
+    def transfer_at_registry
+      @epp_objects = [self]
+      render_template("transfer")
+    end
+
+    def unlock_at_registry
+      @epp_objects = [self]
+      render_template("unlock")
     end
 
     def render_template name 
@@ -137,16 +78,15 @@ module Epp
       contents = file.read
       file.close
 
-      template = ERB.new(contents).result(binding)
+      ERB.new(contents).result(binding)
     end
 
-    def header
-      xml = Document.new
-      xml.root = Node.new("epp")
-      xml.root["xmlns"] = "urn:ietf:params:xml:ns:epp-1.0"
-      xml.root["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
-      xml.root["xsi:schemaLocation"] = "urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd"
-      return xml
+    def object_node_for object, action
+      if object.epp_object_type
+        render_template("#{object.epp_object_type.to_s}_#{action}")
+      else
+        raise "epp_object_type property must be set for object #{object}"
+      end
     end
   end
 end

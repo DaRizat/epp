@@ -1,4 +1,4 @@
-module EppRecord
+module Epp
   class Authentication
     @@config = YAML::load(File.open("#{Dir.pwd}/config/epp.yml"))
     @@registry_conf = @@config[Rails.env]
@@ -39,11 +39,11 @@ module EppRecord
     end
 
     def self.get_attributes_for registry
-      if registry_enabled? registry
+#      if registry_enabled? registry
         @@registry_conf[registry.to_s].symbolize_keys!
-      else
-        raise "Provided registry is not enabled! Please include it in enabled_registries in your EppRecord model!"
-      end
+#      else
+#        raise "Provided registry is not enabled! Please include it in enabled_registries in your EppRecord model!"
+#      end
     end
   end
 end

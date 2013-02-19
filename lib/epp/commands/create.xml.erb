@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <epp xsi:schemaLocation='urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='urn:ietf:params:xml:ns:epp-1.0'>
   <command>
-    <update>
+    <create>
       <% @epp_objects.each do |object| %>
-        <%= object_node_for object, "activate" %>
+        <%= object_node_for object, "create" %>
       <% end %>
-    </update>
+    </create>
+    <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
   </command>
-  <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
 </epp>

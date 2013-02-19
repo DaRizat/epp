@@ -5,15 +5,22 @@
       <clID><%= @username %></clID>
       <pw><%= @password %></pw>
       <options>
-        <version>1.0</version>
-        <lang>en</lang>
+        <version><%= @version %></version>
+        <lang><%= @lang %></lang>
       </options>
       <svcs>
         <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
         <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>
         <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
+        <% unless @extensions.empty? || @extensions.blank? %>
+          <svcExtension>
+            <% for uri in extensions %>
+              <extrURI><%= uri %></extURI>
+            <% end %>
+          </svcExtension>
+        <% end %>
       </svcs>
     </login>
-    <clTRID><%= @transaction_id %></clTRID>
+    <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
   </command>
 </epp>
