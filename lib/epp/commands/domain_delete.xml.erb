@@ -1,9 +1,0 @@
-
-      xml = epp_header
-      xml.root << command_node = Node.new("command")
-      command_node << delete_node = Node.new("delete")
-      delete_node << domain_delete_node = Node.new("domain:delete")
-      domain_delete_node['xmlns:domain'] = "urn:ietf:params:xml:ns:domain-1.0"
-      domain_delete_node << domain_name_node = Node.new("domain:name", full_name)
-      command_node << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
-      xml.to_s

@@ -3,38 +3,62 @@ require 'erb'
 module Epp
   module Commands
 
-    def activate_at_registry
+    def activate_command
       @epp_objects = [self]
       render_template("activate")
     end
 
-    def create_domain_at_registry domain, contact_id
-      @domain = domain
-      @contact_id = contact_id
+    def contact_info_command
+      @epp_objects = [self]
+      render_template("contact_info")
+    end
+
+    def domain_info_command
+      @epp_objects = [self]
+      render_template("domain_info")
+    end
+
+    def delete_contact_command
+      @epp_objects = [self]
+      render_template("delete_contact")
+    end
+
+    def create_contact_command 
+      @epp_objects = [self]
+      render_template("create_contact")
+    end
+
+    def delete_domain_command
+      @epp_objects = [self]
+      render_template("delete_domain")
+    end
+
+    def create_domain_command
+      @epp_objects = [self]
       render_template("create_domain")
     end
 
-    def create_at_registry
-      @epp_objects = [self]
-      render_template("create")
-    end
+#    def create_command
+#      @epp_objects = [self]
+#      render_template("create")
+#    end
 
-    def delete_at_registry
-      @epp_objects = [self]
-      render_template("delete")
-    end
+#    def delete_command
+#      @epp_objects = [self]
+#      render_template("delete")
+#    end
 
-    def expire_at_registry
+    def expire_command
       @epp_objects = [self]
       render_template("expire")
     end
 
-    def lock_at_registry
+    def lock_command
       @epp_objects = [self]
       render_template("lock")
     end
 
-    def epp_login username, password, version, lang, extensions
+    def login_command username, password, version, lang, extensions
       @username = username
       @password = password
       @version = version
@@ -43,45 +67,40 @@ module Epp
       render_template("login")
     end
 
-    def epp_logout
+    def logout_command
       render_template("logout")
     end
 
-    def prepare_to_delete_at_registry
+    def prepare_to_delete_command
       @epp_objects = [self]
       render_template("prepare_to_delete")
     end
 
-    def registry_info
-      @epp_objects = [self]
-      render_template("info")
-    end
-
-    def renew_at_registry
+    def renew_command
       @epp_objects = [self]
       render_template("renew")
     end
 
-    def transfer_at_registry
+    def transfer_command
       @epp_objects = [self]
       render_template("transfer")
     end
 
-    def unlock_at_registry
+    def unlock_command
       @epp_objects = [self]
       render_template("unlock")
     end
 
     def render_template name 
-      gem_dir = File.dirname(__FILE__)
-      file = File.open("#{gem_dir}/commands/#{name}.xml.erb")
+      xml_dir = File.dirname(Dir.pwd)
+      file = File.open("#{Rails.root.join("config", "epp", "#{name}.xml.erb")}")
       contents = file.read
       file.close
-
       ERB.new(contents).result(binding)
     end
 
     def object_node_for object, action
+      @object = object
       if object.epp_object_type
         render_template("#{object.epp_object_type.to_s}_#{action}")
       else

@@ -2,14 +2,8 @@ module Epp
   module Base
 
     include Epp::Commands
-    
-    def epp_create 
-     # if registry_enabled?
-        transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(create_domain_at_registry(self, "nameking_test"))
-     # end
-    end
-
+ 
+    #TODO: Move registry enabled actions logic into epp config file and restore the enabled check here
     def activate_at_registry
      # if registry_enabled?
         transaction = Epp::Transaction.new(self.registry)
@@ -31,26 +25,47 @@ module Epp
      # end
     end
 
-    def delete_from_registry
+    def delete_contact_from_registry
      # if registry_enabled?
         transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(delete_command)
+        return transaction.request(delete_contact_command)
      # end
     end
 
-    def create_at_registry
-      puts "is THIS happening?"
-      # if registry_enabled?
-        puts self.registry
+    def delete_domain_from_registry
+     # if registry_enabled?
         transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(create_domain_at_registry(self, "nameking_test"))
+        return transaction.request(delete_domain_command)
+     # end
+    end
+
+    #TODO: Object should know what type they are and this should be one method
+    def create_contact_at_registry
+      # if registry_enabled?
+        transaction = Epp::Transaction.new(self.registry)
+        return transaction.request(create_contact_command)
       # end
     end
 
-    def registry_info
+    def create_domain_at_registry
       # if registry_enabled?
-        #transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(info_command)
+        transaction = Epp::Transaction.new(self.registry)
+        #TODO: Figure out how to best implement a generic contact ID solution
+        return transaction.request(create_domain_command)
+      # end
+    end
+
+    def contact_registry_info
+      # if registry_enabled?
+        transaction = Epp::Transaction.new(self.registry)
+        return transaction.request(contact_info_command)
+      # end
+    end
+
+    def domain_registry_info
+      # if registry_enabled?
+        transaction = Epp::Transaction.new(self.registry)
+        return transaction.request(domain_info_command)
       # end
     end
   end

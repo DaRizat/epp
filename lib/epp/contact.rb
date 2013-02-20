@@ -22,5 +22,17 @@ module Epp
     def epp_object_type
       @@epp_object_type
     end
+
+    def registry_info
+      contact_registry_info
+    end
+  
+    def create_at_registry
+      create_contact_at_registry 
+    end
+
+    def delete_from_registry
+      delete_contact_from_registry
+    end
   end
 end
