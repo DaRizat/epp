@@ -1,6 +1,5 @@
 module Epp
   module Base
-
     include Epp::Commands
  
     #TODO: Move registry enabled actions logic into epp config file and restore the enabled check here
@@ -14,7 +13,7 @@ module Epp
     def prepare_for_deletion_at_registry
      # if registry_enabled?
         transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(update_before_deletion_command)
+        return transaction.request(prepare_to_delete_command)
      # end
     end
 
