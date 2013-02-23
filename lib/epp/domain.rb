@@ -29,7 +29,7 @@ module Epp
     end
 
     def registry_info
-      contact_registry_info
+      domain_registry_info
     end
   
     def create_at_registry
