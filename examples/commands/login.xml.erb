@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<epp xsi:schemaLocation='urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='urn:ietf:params:xml:ns:epp-1.0'>
+  <command>
+    <login>
+      <clID><%= @username %></clID>
+      <pw><%= @password %></pw>
+      <options>
+        <version><%= @version %></version>
+        <lang><%= @lang %></lang>
+      </options>
+      <svcs>
+        <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
+        <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>
+        <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
+        <% unless @extensions.empty? || @extensions.blank? %>
+          <svcExtension>
+            <% for uri in extensions %>
+              <extrURI><%= uri %></extURI>
+            <% end %>
+          </svcExtension>
+        <% end %>
+      </svcs>
+    </login>
+    <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
+  </command>
+</epp>

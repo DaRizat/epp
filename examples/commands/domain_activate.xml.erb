@@ -1,0 +1,9 @@
+<domain:update xmlns:domain='urn:ietf:params:xml:ns:domain-1.0'>
+  <domain:name><%= @object.name %></domain:name>
+  <domain:add>
+    <domain:status s='ok' />
+  </domain:add>
+  <domain:rem>
+    <domain:status s='inactive' />
+  </domain:rem>
+</domain:update>

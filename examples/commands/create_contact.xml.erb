@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<epp xsi:schemaLocation='urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='urn:ietf:params:xml:ns:epp-1.0'>
+  <command>
+    <create>
+      <% @epp_objects.each do |contact| %>
+        <% account = contact.account %>
+        <% address = contact.address %>
+        <contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0">
+          <contact:id><%= contact.external_id %></contact:id>
+          <contact:postalInfo type="int">
+            <contact:name><%= address.full_name %></contact:name>
+            <contact:org><%= address.org %></contact:org>
+            <contact:addr>
+              <contact:street><%= address.street1 %></contact:street>
+              <% unless address.street2.blank? %>
+                <contact:street><%= address.street2 %></contact:street>
+              <% end %>
+              <contact:city><%= address.city %></contact:city>
+              <contact:sp><%= address.province %></contact:sp>
+              <contact:pc><%= address.postal_code %></contact:pc>
+              <contact:cc><%= address.country %></contact:cc>
+            </contact:addr>
+          </contact:postalInfo>
+          <contact:voice><%= address.phone_number %></contact:voice>
+          <contact:fax><%= address.fax_number %></contact:fax>
+          <contact:email><%= contact.email %></contact:email>
+          <contact:authInfo>
+            <contact:pw><%= account.password %></contact:pw>
+          </contact:authInfo>
+        </contact:create>
+      <% end %>
+    </create>
+    <% @epp_objects.each do |contact| %>
+      <% if(contact.registry == "neustar_us" || contact.registry == "neustar_biz") %>
+        <extension>
+          <neulevel:extension xmlns:neulevel="urn:ietf:params:xml:ns:neulevel-1.0">
+            <neulevel:unspec>AppPurpose=P3 NexusCategory=C11</neulevel:unspec>
+          </neulevel:extension>
+        </extension>
+      <% end %>
+    <% end %>
+    <% @epp_objects.each do |contact| %>
+      <% if(contact.registry == "verisign" || contact.registry == "namestore") %>
+        <extension>
+          <namestoreExt:namestoreExt
+           xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1"
+           xsi:schemaLocation="http://www.verisign-grs.com/epp/namestoreExt-1.1 namestoreExt-1.1.xsd">
+             <namestoreExt:subProduct>dotCC</namestoreExt:subProduct>
+          </namestoreExt:namestoreExt>
+        </extension>
+      <% end %>
+    <% end %>
+    <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
+  </command>
+</epp>

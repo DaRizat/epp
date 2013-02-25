@@ -1,0 +1,23 @@
+<contact:create xmlns:contact="urn:ietf:params:xml:ns:contact-1.0">
+  <contact:id><%= @object.external_id %></contact:id>
+  <contact:postalInfo type="int">
+    <contact:name><%= @object.address.full_name %></contact:name>
+    <contact:org><%= address.org %></contact:org>
+    <contact:addr>
+      <contact:street><%= address.street1 %></contact:street>
+      <% unless address.street2.blank? do %>
+        <contact:street><%= address.street2 %></contact:street>
+      <% end %>
+      <contact:city><%= address.city %></contact:city>
+      <contact:sp><%= address.province %></contact:sp>
+      <contact:pc><%= address.postal_code %></contact:pc>
+      <contact:cc><%= address.country %></contact:cc>
+    </contact:addr>
+  </contact:postalInfo>
+  <contact:voice><%= address.phone_number %></contact:voice>
+  <contact:fax><%= address.fax_number %></contact:fax>
+  <contact:email><%= @object.email %></contact:email>
+  <contact:authInfo>
+    <contact:pw><%= account.password %></contact:pw>
+  </contact:authInfo>
+</contact:create>

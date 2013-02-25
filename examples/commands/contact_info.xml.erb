@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<epp xsi:schemaLocation='urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='urn:ietf:params:xml:ns:epp-1.0'>
+  <command>
+    <info>
+      <% @epp_objects.each do |object| %>
+        <contact:info xmlns:contact='urn:ietf:params:xml:ns:contact-1.0' hosts='all'>
+          <contact:id><%= object.external_id %></contact:id>
+        </contact:info>
+      <% end %>
+    </info>
+    <clTRID><%= UUIDTools::UUID.timestamp_create.to_s %></clTRID>
+  </command>
+</epp>
