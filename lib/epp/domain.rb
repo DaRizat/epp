@@ -18,10 +18,7 @@ module Epp
     end
 
     def registry_enabled?
-      puts "HERRO? #{@@registries}"
-      verdict = @@registries.include? self.registry
-      puts verdict
-      verdict
+      @@registries.include? self.registry
     end
 
     def epp_object_type

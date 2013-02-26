@@ -19,9 +19,17 @@ module Epp
 
     def expire_at_registry
      # if registry_enabled?
-        transaction = Epp::Transaction.new(self.registry)
-        return transaction.request(expire_command)
+        if(self.registry == :neustar_biz || self.registy == :neustar_us)
+          prepare_neustar_expiration
+        else
+          transaction = Epp::Transaction.new(self.registry)
+          return transaction.request(expire_command)
+        end
      # end
+    end
+
+    def prepare_neustar_expiration
+      
     end
 
     def delete_contact_from_registry
