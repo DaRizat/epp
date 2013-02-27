@@ -2,6 +2,10 @@ module Epp
   module Base
     include Epp::Commands
  
+    def self.tlds
+      Epp::Authentication.enabled_tlds
+    end
+
     #TODO: Move registry enabled actions logic into epp config file and restore the enabled check here
     def activate_at_registry
      # if registry_enabled?
