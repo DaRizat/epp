@@ -23,12 +23,8 @@ module Epp
 
     def expire_at_registry
      # if registry_enabled?
-        if(self.registry == :neustar_biz || self.registy == :neustar_us)
-          prepare_neustar_expiration
-        else
-          transaction = Epp::Transaction.new(self.registry)
-          return transaction.request(expire_command)
-        end
+        transaction = Epp::Transaction.new(self.registry)
+        return transaction.request(expire_command)
      # end
     end
 
