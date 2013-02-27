@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
   s.summary = %q{EPP (Extensible Provisioning Protocol) commands for rails models}
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 1
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('0.0.1') then
       s.add_development_dependency(%q<shoulda>, [">= 0"])
