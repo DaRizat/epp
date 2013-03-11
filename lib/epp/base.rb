@@ -75,5 +75,9 @@ module Epp
         return transaction.request(domain_info_command)
       # end
     end
+
+    def get_statuses_for state
+      Epp::Config.domain_config[state]
+    end
   end
 end
