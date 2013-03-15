@@ -1,21 +1,9 @@
-require 'active_support/concern'
-
 module Epp
   module Domain
-    extend ActiveSupport::Concern
-
     include Epp::Base
 
     @@epp_object_type = :domain
     @@registries = []
-
-    module ClassMethods
-      def enable_registries *registries
-        puts "Enabling Reg #{registries}"
-        @@registries = registries
-        puts "#{@@registries}"
-      end
-    end
 
     def registry_enabled?
       @@registries.include? self.registry
