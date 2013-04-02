@@ -8,6 +8,7 @@ require 'yaml'
 
 # Package files
 require File.dirname(__FILE__) + '/require_parameters.rb'
+require File.dirname(__FILE__) + '/epp/config.rb'
 require File.dirname(__FILE__) + '/epp/transaction.rb'
 require File.dirname(__FILE__) + '/epp/exceptions.rb'
 require File.dirname(__FILE__) + '/epp/commands.rb'
