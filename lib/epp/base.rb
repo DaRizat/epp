@@ -6,19 +6,33 @@ module Epp
       Epp::Authentication.enabled_tlds
     end
 
-    def activate_at_registry
+    def poll registry
+      transaction = Epp::Transaction.new(registry)
+      return transaction.poll_queue
+    end
+
+    def transition_to_state state
       transaction = Epp::Transaction.new(self.registry)
-      return transaction.request(activate_command)
+      command = state_transition_command :to => to_state
+      return transaction.request(command)
+    end
+
+    def transition_between_states from_state, to_state
+      transaction = Epp::Transaction.new(self.registry)
+      command = state_transition_command :from => from_state, :to => to_state
+      return transaction.request(command)
+    end
+
+    def activate_at_registry
+      transition_to_state :active
     end
 
     def prepare_for_deletion_at_registry
-      transaction = Epp::Transaction.new(self.registry)
-      return transaction.request(prepare_to_delete_command)
+      transition_to_state :active
     end
 
     def expire_at_registry
-      transaction = Epp::Transaction.new(self.registry)
-      return transaction.request(expire_command)
+      transition_to_state :autorenew_grace_period
     end
 
     def delete_contact_from_registry

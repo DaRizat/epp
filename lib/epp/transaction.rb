@@ -3,7 +3,8 @@ module Epp #:nodoc:
 
     include LibXML::XML
     include RequiresParameters
-   
+    include Epp::Commands   
+
     require 'pp'
 
     attr_accessor :tag, :password, :server, :port, :lang, :services, :extensions, :version
@@ -33,7 +34,6 @@ module Epp #:nodoc:
       @services   = attributes[:services]   || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
       @extensions = attributes[:extensions] || []
       @version    = attributes[:version]    || "1.0"
-
       @sslcert    = attributes[:sslcert]
       @sslkey     = attributes[:sslkey]
       @ca_file    = attributes[:ca_file]
@@ -43,11 +43,52 @@ module Epp #:nodoc:
       @logged_in  = false
     end
     
+    def poll registry
+      open_connection
+      @logged_in = true if login
+
+      begin
+        messages = ""
+        response = request(poll_command_for(registry), [1300, 1301])
+
+        if((response/"epp"/"response"/"result").attr("code").to_i == 1300)
+          return response
+        else
+          msg_count = (response/"epp"/"response"/"msgQ").attr("count").to_i
+
+          msg_count.times do
+            msg_id = (response/"epp"/"response"/"msgQ").attr("id")
+            messages += (response/"epp"/"response").to_s
+            request(acknowledge_message(registry, msg_id))
+            response = request(poll_command_for(registry), [1300, 1031])
+          end
+        end
+      rescue EppErrorResponse => e
+        return e
+      ensure
+        @logged_in = false if @logged_in && logout
+        close_connection
+      end
+    end
+
+    def poll_request
+      req = poll_request
+      request(
+      response = Hpricot::XML(send_request(req))
+      handle_response(response)
+    end
+
+    def acknowledge_poll_response msg_id
+      req = poll_acknowledgement msg_id
+      response = Hpricot::XML(send_request(req))
+      handle_response(response)
+    end
+
     # Sends an XML request to the EPP server, and receives an XML response. 
     # <tt><login></tt> and <tt><logout></tt> requests are also wrapped
     # around the request, so we can close the socket immediately after
     # the request is made.
-    def request(xml)
+    def request(xml, acceptable_response_codes = [1000, 1001])
       open_connection
       
       @logged_in = true if login
@@ -59,7 +100,7 @@ module Epp #:nodoc:
         close_connection
       end
       
-      return handle_response(@response).to_s
+      return handle_response(@response, acceptable_response_codes).to_s
     end
         
     # Wrapper which sends an XML frame to the server, and receives 
@@ -173,7 +214,7 @@ module Epp #:nodoc:
       command << login = Node.new("logout")
       command << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
       response = Hpricot::XML(send_request(xml.to_s))
-      handle_response(response, 1500)
+      handle_response(response, [1500])
     end
 
     # Sends a standard login request to the EPP server.
@@ -192,15 +233,14 @@ module Epp #:nodoc:
     #  handle_response(response, 1500)
     #end
     
-    def handle_response(response, acceptable_response = 1000)
-      result_code = (response/"epp"/"response"/"result").attr("code").to_i
+    def handle_response(response, acceptable_response_codes)
+      response_code = (response/"epp"/"response"/"result").attr("code").to_i
       
-      if result_code == acceptable_response
+      if acceptable_response_codes.include?(response_code)
         return response
       else
-        result_message  = (response/"epp"/"response"/"result"/"msg").text.strip
-        
-        raise EppErrorResponse.new(:xml => response, :code => result_code, :message => result_message)
+        response_message  = (response/"epp"/"response"/"result"/"msg").text.strip
+        raise EppErrorResponse.new(:xml => response, :code => response_code, :message => response_message )
       end
     end
   end
