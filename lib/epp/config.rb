@@ -1,5 +1,5 @@
 module Epp
-  module Config
+  class Config
 
     @@config = YAML::load(File.open("#{Dir.pwd}/config/epp.yml"))
 

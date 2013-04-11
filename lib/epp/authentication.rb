@@ -4,7 +4,7 @@ module Epp
     @@config = Epp::Config.registry_config
 
     def self.get_attributes_for registry
-      @@config[registry.to_s]
+      @@config[registry.to_s].symbolize_keys!
     end
 
     def self.action_enabled? registry, action
