@@ -73,7 +73,6 @@ module Epp #:nodoc:
 
     def poll_request
       req = poll_request
-      request(
       response = Hpricot::XML(send_request(req))
       handle_response(response)
     end
