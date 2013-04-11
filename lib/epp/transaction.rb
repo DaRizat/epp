@@ -202,7 +202,7 @@ module Epp #:nodoc:
       end
       command << Node.new("clTRID", UUIDTools::UUID.timestamp_create.to_s)
       response = Hpricot::XML(send_request(xml.to_s))
-      handle_response(response)
+      handle_response(response, [1000])
     end
 
     def logout
