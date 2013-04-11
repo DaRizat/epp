@@ -24,5 +24,13 @@ module Epp
     def delete_from_registry
       delete_domain_from_registry
     end
+
+    def request_tranfer_in 
+      request_domain_transfer_in
+    end
+
+    def request_transfer_out
+      request_domain_transfer_out
+    end
   end
 end
