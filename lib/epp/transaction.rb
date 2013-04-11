@@ -3,7 +3,6 @@ module Epp #:nodoc:
 
     include LibXML::XML
     include RequiresParameters
-    include Epp::Commands   
 
     require 'pp'
 
