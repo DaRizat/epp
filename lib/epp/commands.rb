@@ -87,8 +87,9 @@ module Epp
       render_template("prepare_to_delete")
     end
 
-    def renew_command
-      @epp_objects = [self]
+    def renew_domain_command
+      @domain = self
+      @exp_date = DateTime.strptime(self.expiration_date.to_s,'%Y-%m-%d')
       render_template("renew")
     end
 

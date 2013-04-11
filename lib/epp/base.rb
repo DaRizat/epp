@@ -33,6 +33,11 @@ module Epp
       return transaction.request(prepare_to_delete_command)
     end
 
+    def renew_domain_at_registry
+      transaction = Epp::Transaction.new(self.registry)
+      return transaction.request(renew_domain_command)
+    end
+
     def expire_at_registry
       transaction = Epp::Transaction.new(self.registry)
       return transaction.request(expire_command)
