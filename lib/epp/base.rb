@@ -74,6 +74,11 @@ module Epp
       return transaction.request(contact_info_command)
     end
 
+    def update_domain_contacts opts
+      transaction = Epp::Transaction.new(self.registry)
+      return transaction.request(update_domain_contacts_command(opts))
+    end
+
     def domain_registry_info
       transaction = Epp::Transaction.new(self.registry)
       return transaction.request(domain_info_command)

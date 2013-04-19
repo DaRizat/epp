@@ -14,6 +14,21 @@ module Epp
        
     end
 
+    def update_domain_contacts opts
+      @domain = self
+      @registrant_id = opts[:new_reg_id]
+
+      @removed_contacts = [ {type:"admin", id:opts[:old_admin_id]},
+                            {type:"billing", id:opts[:old_billing_id]},
+                            {type:"tech", id:opts[:old_tech_id]} ]
+
+      @added_contacts = [ {type:"admin", id:opts[:new_admin_id]},
+                          {type:"billing", id:opts[:new_billing_id]},
+                          {type:"tech", id:opts[:new_tech_id]} ]
+
+      render_template("update_domain_contacts")
+    end
+
     def activate_command
       @epp_objects = [self]
       render_template("activate")
