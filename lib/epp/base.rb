@@ -43,6 +43,11 @@ module Epp
       return transaction.request(expire_command)
     end
 
+    def unexpire_at_registry
+      transaction = Epp::Transaction.new(self.registry)
+      return transaction.request(unexpire_command)
+    end
+
     def delete_contact_from_registry
       transaction = Epp::Transaction.new(self.registry)
       return transaction.request(delete_contact_command)

@@ -89,8 +89,13 @@ module Epp
 
     def renew_domain_command
       @domain = self
-      @exp_date = DateTime.strptime(self.expiration_date.to_s,'%Y-%m-%d')
+      @exp_date = Time.at(self.expiration_date).utc.strftime('%Y-%m-%d')
       render_template("renew")
+    end
+
+    def unexpire_command
+      @domain = self
+      render_template("unexpire")
     end
 
     def transfer_command
