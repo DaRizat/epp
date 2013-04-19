@@ -14,7 +14,7 @@ module Epp
        
     end
 
-    def update_domain_contacts opts
+    def update_domain_contacts_command opts
       @domain = self
       @registrant_id = opts[:new_reg_id]
 
