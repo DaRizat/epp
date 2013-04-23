@@ -64,6 +64,11 @@ module Epp
       return transaction.request(create_contact_command)
     end
 
+    def create_contact_at_registry_from_map map
+      transaction = Epp::Transaction.new(self.registry)
+      return transaction.request(create_contact_from_map_command(map))
+    end
+
     def create_domain_at_registry
       transaction = Epp::Transaction.new(self.registry)
       return transaction.request(create_domain_command)

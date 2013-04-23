@@ -14,6 +14,14 @@ module Epp
        
     end
 
+    def create_contact_from_map_command(map)
+      @map = map
+      @contact = self
+      @account = account
+      @address = address
+      render_template("create_contact")
+    end
+
     def update_domain_contacts_command opts
       @domain = self
       @registrant_id = opts[:new_reg_id]

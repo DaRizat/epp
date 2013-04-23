@@ -31,6 +31,10 @@ module Epp
       create_contact_at_registry 
     end
 
+    def create_at_registry_from_map(map)
+      create_contact_at_registry_from_map(map)
+    end
+
     def delete_from_registry
       delete_contact_from_registry
     end
