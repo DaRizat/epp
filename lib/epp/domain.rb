@@ -33,8 +33,8 @@ module Epp
       request_domain_transfer_out
     end
   
-    def renew_at_registry
-      renew_domain_at_registry
+    def renew_at_registry term = 1
+      renew_domain_at_registry term
     end
   end
 end

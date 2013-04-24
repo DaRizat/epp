@@ -33,9 +33,9 @@ module Epp
       return transaction.request(prepare_to_delete_command)
     end
 
-    def renew_domain_at_registry
+    def renew_domain_at_registry term
       transaction = Epp::Transaction.new(self.registry)
-      return transaction.request(renew_domain_command)
+      return transaction.request(renew_domain_command(term))
     end
 
     def expire_at_registry

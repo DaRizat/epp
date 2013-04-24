@@ -110,7 +110,8 @@ module Epp
       render_template("prepare_to_delete")
     end
 
-    def renew_domain_command
+    def renew_domain_command term
+      @term = term
       @domain = self
       @exp_date = Time.at(self.expiration_date).utc.strftime('%Y-%m-%d')
       render_template("renew")
